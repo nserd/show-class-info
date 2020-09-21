@@ -1,7 +1,11 @@
 package ru.nserd.console;
 
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -11,10 +15,34 @@ public class Main {
             System.exit(-1);
         }
 
-        try {
-            printParentsAndInterfaces(Class.forName(args[0]));
-        } catch (ClassNotFoundException e) {
-            System.err.println("Class not found.");
+        if (args[0].charAt(0) == '-') {
+            argHandler(args[0]);
+        } else {
+            try {
+                printParentsAndInterfaces(Class.forName(args[0]));
+            } catch (ClassNotFoundException e) {
+                System.err.println("Class not found.");
+                System.exit(-1);
+            }
+        }
+    }
+
+    private static void argHandler(String arg) {
+        if (arg.equals("-h") || arg.equals("--help")) {
+            try {
+                URI uriHelpFile = Objects.requireNonNull(Main.class.getClassLoader().getResource("Help")).toURI();
+                Files.readAllLines(Path.of(uriHelpFile)).forEach(System.out::println);
+            } catch (URISyntaxException | IOException e) {
+                e.printStackTrace();
+            }
+        } else if (arg.equals("-l") || arg.equals("--list")) {
+            String packageList = Arrays.stream(Package.getPackages())
+                    .map(Package::toString)
+                    .collect(Collectors.joining("\n"));
+
+            System.out.println("Package List:\n\n" + packageList);
+        } else {
+            System.err.println("Invalid argument.");
             System.exit(-1);
         }
     }
