@@ -1,11 +1,7 @@
 package ru.nserd.console;
 
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 public class Main {
