@@ -9,6 +9,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
+    private static final String HELP_TEXT = "Usage:\n" +
+            "java -jar ShowClassInfo-1.0.jar [option] OR java -jar ShowClassInfo-1.0.jar [Class]\n" +
+            "\n" +
+            "Options:\n" +
+            "-h, --help display this help and exit\n" +
+            "-l, --list display a list of available packages\n" +
+            "\n" +
+            "Example:\n" +
+            "java -jar ShowClassInfo-1.0.jar java.lang.Object";
+
     public static void main(String[] args) {
         if (args.length < 1) {
             System.err.println("No argument found.");
@@ -29,12 +39,7 @@ public class Main {
 
     private static void argHandler(String arg) {
         if (arg.equals("-h") || arg.equals("--help")) {
-            try {
-                URI uriHelpFile = Objects.requireNonNull(Main.class.getClassLoader().getResource("Help")).toURI();
-                Files.readAllLines(Path.of(uriHelpFile)).forEach(System.out::println);
-            } catch (URISyntaxException | IOException e) {
-                e.printStackTrace();
-            }
+            System.out.println(HELP_TEXT);
         } else if (arg.equals("-l") || arg.equals("--list")) {
             String packageList = Arrays.stream(Package.getPackages())
                     .map(Package::toString)
