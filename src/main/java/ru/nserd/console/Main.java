@@ -1,20 +1,15 @@
 package ru.nserd.console;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Main {
-    private static final String HELP_TEXT = "Usage:\n" +
-            "java -jar ShowClassInfo-1.0.jar [option] OR java -jar ShowClassInfo-1.0.jar [Class]\n" +
-            "\n" +
-            "Options:\n" +
-            "-h, --help display this help and exit\n" +
-            "-l, --list display a list of available packages\n" +
-            "\n" +
-            "Example:\n" +
-            "java -jar ShowClassInfo-1.0.jar java.lang.Object";
-
     public static void main(String[] args) {
         if (args.length < 1) {
             System.err.println("No argument found.");
@@ -35,7 +30,7 @@ public class Main {
 
     private static void argHandler(String arg) {
         if (arg.equals("-h") || arg.equals("--help")) {
-            System.out.println(HELP_TEXT);
+            System.out.println(loadHelp());
         } else if (arg.equals("-l") || arg.equals("--list")) {
             String packageList = Arrays.stream(Package.getPackages())
                     .map(Package::toString)
@@ -75,5 +70,26 @@ public class Main {
         } else {
             return classes;
         }
+    }
+
+    private static String loadHelp() {
+        String helpStr = null;
+
+        try (InputStream is = Objects.requireNonNull(Main.class.getClassLoader().getResourceAsStream("Help"));
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+            byte[] buffer = new byte[1024];
+            int length;
+
+            while ((length = is.read(buffer)) != -1) {
+                out.write(buffer, 0, length);
+            }
+
+            helpStr = out.toString(StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return Objects.requireNonNull(helpStr);
     }
 }

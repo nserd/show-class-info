@@ -1,0 +1,8 @@
+Usage:
+java -jar ShowClassInfo-1.0.jar [option] OR java -jar ShowClassInfo-1.0.jar [Class]
+
+Options:
+-h, --help display this help and exit
+-l, --list display a list of available packages
+
+Example: java -jar ShowClassInfo-1.0.jar java.lang.Object
