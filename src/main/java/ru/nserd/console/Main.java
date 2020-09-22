@@ -22,8 +22,14 @@ public class Main {
             try {
                 printParentsAndInterfaces(Class.forName(args[0]));
             } catch (ClassNotFoundException e) {
-                System.err.println("Class not found.");
-                System.exit(-1);
+                Class<?> c = searchClass(0, args[0]);
+
+                if (c != null) {
+                    printParentsAndInterfaces(c);
+                } else {
+                    System.err.println("Class not found.");
+                    System.exit(-1);
+                }
             }
         }
     }
@@ -41,6 +47,20 @@ public class Main {
             System.err.println("Invalid argument.");
             System.exit(-1);
         }
+    }
+
+    private static Class<?> searchClass(int i, String className) {
+        Class<?> c = null;
+
+        if (i < Package.getPackages().length) {
+            try {
+                c = Class.forName(Package.getPackages()[i].getName() + "." + className);
+            } catch (ClassNotFoundException e) {
+                return searchClass(i + 1, className);
+            }
+        }
+
+        return c;
     }
 
     public static void printParentsAndInterfaces(Class<?> c) {
