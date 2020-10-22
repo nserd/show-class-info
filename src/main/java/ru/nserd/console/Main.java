@@ -75,7 +75,7 @@ public class Main {
         interfacesString = interfacesString.length() > 0 ? interfacesString : "none";
         parentsString = parentsString.length() > 0 ? parentsString : "none";
 
-        String classString = "Class: " + c.getName();
+        String classString = getType(c) + ": " + c.getName();
 
         System.out.println(classString);
         System.out.println("-".repeat(classString.length()));
@@ -90,6 +90,16 @@ public class Main {
         } else {
             return classes;
         }
+    }
+
+    private static String getType(Class<?> c) {
+        String type = "Class";
+
+        if (c.isInterface()) type = "Interface";
+        if (c.isEnum()) type = "Enumeration";
+        if (c.isAnnotation()) type = "Annotation";
+
+        return type;
     }
 
     private static String loadHelp() {
