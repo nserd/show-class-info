@@ -6,5 +6,5 @@ Options:
 -l, --list display a list of available packages
 
 Example:
-java -jar ShowClassInfo-1.0.jar java.lang.Object
-java -jar ShowClassInfo-1.0.jar Integer
+java -jar /path/to/jar java.lang.Object
+java -jar /path/to/jar Integer
