@@ -3,49 +3,63 @@ package ru.nserd.console;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Main {
+    private static boolean addMethods = false;
+
     public static void main(String[] args) {
         if (args.length < 1) {
             System.err.println("No argument found.");
+            System.out.println(loadHelp());
             System.exit(-1);
         }
 
-        if (args[0].charAt(0) == '-') {
-            argHandler(args[0]);
-        } else {
-            try {
-                printParentsAndInterfaces(Class.forName(args[0]));
-            } catch (ClassNotFoundException e) {
-                Class<?> c = searchClass(0, args[0]);
+        List<String> arguments = Arrays.stream(args)
+                .filter(arg -> arg.charAt(0) == '-')
+                .collect(Collectors.toList());
 
-                if (c != null) {
-                    printParentsAndInterfaces(c);
-                } else {
-                    System.err.println("Class not found.");
-                    System.exit(-1);
-                }
+        argHandler(arguments);
+
+        try {
+            printInfo(Class.forName(args[0]));
+        } catch (ClassNotFoundException e) {
+            Class<?> c = searchClass(0, args[0]);
+
+            if (c != null) {
+                printInfo(c);
+            } else {
+                System.err.println("Class not found.");
+                System.exit(-1);
             }
         }
     }
 
-    private static void argHandler(String arg) {
-        if (arg.equals("-h") || arg.equals("--help")) {
+    private static void argHandler(List<String> arguments) {
+        if (arguments.contains("--help") || arguments.contains("-h")) {
             System.out.println(loadHelp());
-        } else if (arg.equals("-l") || arg.equals("--list")) {
-            String packageList = Arrays.stream(Package.getPackages())
-                    .map(Package::toString)
-                    .collect(Collectors.joining("\n"));
-
-            System.out.println("Package List:\n\n" + packageList);
+            System.exit(0);
+        } else if (arguments.contains("--list") || arguments.contains("-l")) {
+            printPackages();
+            System.exit(0);
         } else {
-            System.err.println("Invalid argument.");
-            System.exit(-1);
+            for (String arg : arguments) {
+                switch (arg) {
+                    case "--methods":
+                    case "-m":
+                        addMethods = true;
+                        break;
+                    default:
+                        System.err.println("Invalid argument: " + arg);
+                        System.exit(-1);
+                }
+            }
         }
     }
 
@@ -63,7 +77,12 @@ public class Main {
         return c;
     }
 
-    public static void printParentsAndInterfaces(Class<?> c) {
+    private static void printInfo(Class<?> c) {
+        printParentsAndInterfaces(c);
+        if (addMethods) printMethods(c);
+    }
+
+    private static void printParentsAndInterfaces(Class<?> c) {
         String interfacesString = Arrays.stream(c.getInterfaces())
                 .map(Class::getName)
                 .collect(Collectors.joining(", "));
@@ -77,10 +96,32 @@ public class Main {
 
         String classString = getType(c) + ": " + c.getName();
 
-        System.out.println(classString);
-        System.out.println("-".repeat(classString.length()));
+        System.out.println(stringWithBorders(classString));
         System.out.printf("%-11s: %s%n", "Interfaces", interfacesString);
         System.out.printf("%-11s: %s%n", "Parents", parentsString);
+    }
+
+    private static void printMethods(Class<?> c) {
+        String methods = Arrays.stream(c.getDeclaredMethods())
+                .map(Method::toGenericString)
+                .map(m -> m.replaceAll(c.getPackage().getName() + "\\." , ""))
+                .map(m -> m.replaceAll(c.getSimpleName() + "\\.", ""))
+                .collect(Collectors.joining("\n"));
+
+        System.out.println();
+        System.out.println("Methods");
+        System.out.println("─".repeat("Methods" .length()));
+        System.out.println(methods);
+    }
+
+    private static void printPackages() {
+        String packageList = Arrays.stream(Package.getPackages())
+                .map(Package::toString)
+                .map(packageName -> packageName.replaceAll("package ", ""))
+                .collect(Collectors.joining("\n"));
+
+        System.out.println(stringWithBorders("Package List"));
+        System.out.println(packageList);
     }
 
     private static LinkedList<Class<?>> getParent(LinkedList<Class<?>> classes, Class<?> c) {
@@ -121,5 +162,11 @@ public class Main {
         }
 
         return Objects.requireNonNull(helpStr);
+    }
+
+    private static String stringWithBorders(String str) {
+        return "┌─" + "─".repeat(str.length()) + "─┐" + "\n" +
+                "│ " + str + " │" + "\n" +
+                "└─" + "─".repeat(str.length()) + "─┘" + "\n";
     }
 }

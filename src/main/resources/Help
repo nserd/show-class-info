@@ -1,10 +1,11 @@
 Usage:
-java -jar ShowClassInfo-1.0.jar [option] OR java -jar ShowClassInfo-1.0.jar [Class]
+java -jar /path/to/jar [option] OR java -jar /path/to/jar [Class]
 
 Options:
 -h, --help display this help and exit
 -l, --list display a list of available packages
+-m, --methods display class methods
 
 Example:
-java -jar /path/to/jar java.lang.Object
+java -jar /path/to/jar java.lang.Object -m
 java -jar /path/to/jar Integer
