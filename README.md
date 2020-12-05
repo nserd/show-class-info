@@ -1,6 +1,7 @@
 *Example:*
+
+`java -jar ShowClassInfo.jar Integer`
 ```
-java -jar ShowClassInfo.jar Integer
 ┌──────────────────────────┐
 │ Class: java.lang.Integer │
 └──────────────────────────┘
