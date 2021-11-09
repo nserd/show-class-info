@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -47,6 +48,9 @@ public class Main {
             System.exit(0);
         } else if (arguments.contains("--list") || arguments.contains("-l")) {
             printPackages();
+            System.exit(0);
+        } else if (arguments.contains("--version") || arguments.contains("-v")) {
+            System.out.println("Version: " + getVersion());
             System.exit(0);
         } else {
             for (String arg : arguments) {
@@ -162,6 +166,18 @@ public class Main {
         }
 
         return Objects.requireNonNull(helpStr);
+    }
+
+    private static String getVersion() {
+        Properties prop =  new Properties();
+        
+        try {
+            prop.load(Main.class.getClassLoader().getResourceAsStream("project.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return prop.getProperty("version");
     }
 
     private static String stringWithBorders(String str) {
