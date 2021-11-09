@@ -14,8 +14,14 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh "mvn clean package"
+                sh "mvn -DskipTests clean package"
                 sh "docker build . -t show-class-info"
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh "mvn test"
             }
         }
     } 
