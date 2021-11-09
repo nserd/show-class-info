@@ -1,0 +1,10 @@
+package ru.nserd.console;
+
+import org.junit.jupiter.api.Test;
+
+public class MainTest {
+    @Test
+    void checkJunit() {
+        // ...
+    }    
+}
