@@ -7,6 +7,10 @@ pipeline {
         pollSCM('* * * * *')
     }
 
+    options {
+        timestamps()
+    }
+
     stages {
         stage('Build') {
             steps {
